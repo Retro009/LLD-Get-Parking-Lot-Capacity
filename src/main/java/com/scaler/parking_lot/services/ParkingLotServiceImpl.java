@@ -1,10 +1,7 @@
 package com.scaler.parking_lot.services;
 
 import com.scaler.parking_lot.exceptions.InvalidParkingLotException;
-import com.scaler.parking_lot.models.ParkingFloor;
-import com.scaler.parking_lot.models.ParkingLot;
-import com.scaler.parking_lot.models.ParkingSpotStatus;
-import com.scaler.parking_lot.models.VehicleType;
+import com.scaler.parking_lot.models.*;
 import com.scaler.parking_lot.respositories.ParkingLotRepository;
 
 import java.util.*;
@@ -27,13 +24,15 @@ public class ParkingLotServiceImpl implements ParkingLotService{
             vehicleTypes = Arrays.asList(VehicleType.values());
 
         for(ParkingFloor floor: parkingLot.getParkingFloors()){
-            if(parkingFloorIds.size()>0 && !parkingFloorIds.contains(floor.getId()))
-                continue;
-            Map<String, Integer> vehicleMap = new HashMap<>();
-            for(VehicleType vehicleType:vehicleTypes){
-                vehicleMap.put(vehicleType.name(), (int) floor.getSpots().stream().filter(spot -> spot.getSupportedVehicleType().equals(vehicleType) && spot.getStatus().equals(ParkingSpotStatus.AVAILABLE)).count());
+            if(floor.getStatus().equals(FloorStatus.OPERATIONAL)){
+                if(parkingFloorIds.size()>0 && !parkingFloorIds.contains(floor.getId()))
+                    continue;
+                Map<String, Integer> vehicleMap = new HashMap<>();
+                for(VehicleType vehicleType:vehicleTypes){
+                    vehicleMap.put(vehicleType.name(), (int) floor.getSpots().stream().filter(spot -> spot.getSupportedVehicleType().equals(vehicleType) && spot.getStatus().equals(ParkingSpotStatus.AVAILABLE)).count());
+                }
+                capacityMap.put(floor, vehicleMap);
             }
-            capacityMap.put(floor, vehicleMap);
         }
 
         return capacityMap;
