@@ -31,7 +31,7 @@ public class ParkingLotServiceImpl implements ParkingLotService{
                 continue;
             Map<String, Integer> vehicleMap = new HashMap<>();
             for(VehicleType vehicleType:vehicleTypes){
-                vehicleMap.put(vehicleType.name(), (int) floor.getSpots().stream().filter(spot -> spot.getSupportedVehicleType().equals(vehicleType)).count());
+                vehicleMap.put(vehicleType.name(), (int) floor.getSpots().stream().filter(spot -> spot.getSupportedVehicleType().equals(vehicleType) && spot.getStatus().equals(ParkingSpotStatus.AVAILABLE)).count());
             }
             capacityMap.put(floor, vehicleMap);
         }
