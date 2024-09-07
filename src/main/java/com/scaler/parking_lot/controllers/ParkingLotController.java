@@ -25,13 +25,23 @@ public class ParkingLotController {
 
     public GetParkingLotCapacityResponseDto getParkingLotCapacity(GetParkingLotCapacityRequestDto getParkingLotCapacityRequestDto) {
         GetParkingLotCapacityResponseDto responseDto = new GetParkingLotCapacityResponseDto();
+
         try{
-            responseDto.setCapacityMap(parkingLotService.getParkingLotCapacity(getParkingLotCapacityRequestDto.getParkingLotId(),getParkingLotCapacityRequestDto.getParkingFloorIds(),getParkingLotCapacityRequestDto.getVehicleTypes().stream().map(vehicleType -> VehicleType.valueOf(vehicleType)).collect(Collectors.toList())));
+            validateRequestDto(getParkingLotCapacityRequestDto);
+            List<VehicleType> vehicleTypes = new ArrayList<>();
+            if(getParkingLotCapacityRequestDto.getVehicleTypes()!=null)
+                vehicleTypes = getParkingLotCapacityRequestDto.getVehicleTypes().stream().map(vehicleType -> VehicleType.valueOf(vehicleType)).collect(Collectors.toList());
+            responseDto.setCapacityMap(parkingLotService.getParkingLotCapacity(getParkingLotCapacityRequestDto.getParkingLotId(),getParkingLotCapacityRequestDto.getParkingFloorIds(),vehicleTypes));
             responseDto.setResponse(new Response(ResponseStatus.SUCCESS,"Parking Lot Information Received Successfully"));
-        } catch (InvalidParkingLotException e) {
+        } catch (GetParkingLotRequestValidationException | InvalidParkingLotException e) {
             responseDto.setResponse(new Response(ResponseStatus.FAILURE,e.getMessage()));
         }
-        return null;
+        return responseDto;
+    }
+
+    public void validateRequestDto(GetParkingLotCapacityRequestDto requestDto) throws GetParkingLotRequestValidationException {
+        if(requestDto.getParkingLotId()<=0)
+            throw new GetParkingLotRequestValidationException("Invalid Parking Lot Id");
     }
 
 }

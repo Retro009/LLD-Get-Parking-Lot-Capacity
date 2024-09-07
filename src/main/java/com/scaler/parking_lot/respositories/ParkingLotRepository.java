@@ -13,4 +13,5 @@ public interface ParkingLotRepository {
     public Optional<ParkingLot> getParkingLotById(long id);
 
     public ParkingLot save(ParkingLot parkingLot);
+
 }
